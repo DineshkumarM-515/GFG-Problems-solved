@@ -5,20 +5,34 @@ class Solution {
         int n = mat.length;
         int m = mat[0].length;
         
-        int[] col = new int[m];
-        int[] row = new int[n];
+        Stack<Integer> st = new Stack<>();
         
         for(int i=0;i<n;i++){
-            for(int j=0;j<m;j++){
-                if(mat[i][j] == 0) row[i]++;
-                if(mat[i][j] == 1) col[j]++;
+           st.push(i);
+        }
+        
+        while(st.size() > 1){
+            int a = st.pop();
+            int b = st.pop();
+            
+            if(mat[a][b] == 1){
+                st.push(b);
+            }
+            else{
+                st.push(a);
             }
         }
         
+        int candidate = st.pop();
+        
         for(int i=0;i<n;i++){
-            if(row[i] == n-1 && col[i] == n) return i;
+            if(i == candidate) continue;
+            
+            if(mat[candidate][i] == 1 || mat[i][candidate] == 0){
+                return -1;
+            }
         }
         
-        return -1;
+        return candidate;
     }
 }
