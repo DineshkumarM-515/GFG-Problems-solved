@@ -1,58 +1,76 @@
-/*
+/* Node Structure
 class Node {
     int data;
     Node left, right;
 
-    public Node(int d) {
-        data = d;
+    Node(int val) {
+        data = val;
         left = right = null;
     }
-}
-*/
+} */
 
 class Solution {
-    ArrayList<Integer> boundaryTraversal(Node root) {
+    
         // code here
-        Node curr = root;
-        ArrayList<Integer> boundary = new ArrayList<>();
-        if(root == null) return boundary;
-        boundary.add(curr.data);
-        if(root.left == null && root.right == null) return boundary;
+        ArrayList<Integer> ans = new ArrayList<>();
         
-        if(root.left != null){
-            curr = root.left;
+        boolean isLeaf(Node root){
+            return (root.left == null && root.right == null);
+        }
+        
+        void addLeftNodes(Node node){
+            Node curr = node.left;
             while(curr != null){
-                if(curr.left != null || curr.right != null) boundary.add(curr.data);
+                if(!isLeaf(curr)) ans.add(curr.data);
                 if(curr.left != null) curr = curr.left;
                 else curr = curr.right;
             }
         }
         
-        Stack<Node> q = new Stack<>();
-        q.add(root);
-        while(!q.isEmpty()){
-            Node f = q.pop();
-            if(f.left == null && f.right == null){
-                boundary.add(f.data);
+        void addLeaves(Node node){
+            if(node == null) return;
+            
+            Stack<Node> st = new Stack<>();
+            st.push(node);
+            
+            while(!st.isEmpty()){
+                Node curr = st.pop();
+                if(isLeaf(curr)){
+                    ans.add(curr.data);
+                }
+                if(curr.right != null) st.push(curr.right);
+                if(curr.left != null) st.push(curr.left);
             }
-            if(f.right != null) q.push(f.right);
-            if(f.left != null) q.push(f.left);
         }
         
-        Stack<Integer> q2 = new Stack<>();
-        curr = root.right;
-        while(curr != null){
-            if(curr.left != null || curr.right != null) q2.add(curr.data);
-            if(curr.right != null) curr = curr.right;
-            else curr = curr.left;
+        void addRightNodes(Node node){
+            Node curr = node.right;
+            ArrayList<Integer> temp = new ArrayList<>();
+            while(curr != null){
+                if(!isLeaf(curr)) temp.add(curr.data);
+                if(curr.right != null) curr = curr.right;
+                else curr = curr.left;
+            }
+            
+            for(int i = temp.size()-1 ; i>=0;i--){
+                ans.add(temp.get(i));
+            }
         }
         
-        while(!q2.isEmpty()){
-            int val = q2.pop();
-            boundary.add(val);
+        public ArrayList<Integer> boundaryTraversal(Node root) {
+            if(root == null) return ans;
+            if(!isLeaf(root)) ans.add(root.data);
+            else{
+                ans.add(root.data);
+                return ans;
+            }
+            
+            addLeftNodes(root);
+            addLeaves(root);
+            addRightNodes(root);
+            
+            return ans;
+        
         }
-        
-        return boundary;
-        
-    }
+    
 }
